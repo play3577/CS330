@@ -15,6 +15,8 @@ const int SMALL_STATE = 0, BIG_STATE = 1, FIRE_STATE = 2;
 
 class Mario: public AllMovable {
 
+    static unsigned char *texture;
+    
 public:
 	//Constructor
 	Mario();
@@ -45,8 +47,9 @@ private:
     //checks to see if Mario runs into an object
     bool check();
 	//Returns true if Mario is in the fire state
-	bool fireball(); 
-	
+	bool fireball();
+    
+    GLuint marioTexture;
 };
 
 #endif

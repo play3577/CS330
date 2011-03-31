@@ -9,23 +9,34 @@
  */
 
 
+#include <cstdio>
 #include "Mario.h"
 #include "LListIterator.h"
 #include "Level.h"
 
+unsigned char *Mario::texture = NULL;
+
 //------------------------------------------------------------
 void Mario::draw()
 {
-	glColor3ub(255, 0, 0);
+	//glColor3ub(255, 0, 0);
 	int i;
 	
-		glBegin(GL_POLYGON);
-		glVertex2d(left(), bottom());
-		//glVertex2d(left(), top());
-        glVertex2d(((right()-left())/2)+left(), top());
-		//glVertex2d(right(),top());
-		glVertex2d(right(), bottom());
-		glEnd();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, marioTexture);
+    glBegin(GL_POLYGON);
+    glTexCoord2d(0, 0);
+    glVertex2d(left(), bottom());
+    glTexCoord2d(0, 1);
+    glVertex2d(left(), top());
+    
+    //glVertex2d(((right()-left())/2)+left(), top());
+    glTexCoord2d(1,1);
+    glVertex2d(right(),top());
+    glTexCoord2d(1, 0);
+    glVertex2d(right(), bottom());
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 	
 }
 //------------------------------------------------------------
@@ -49,6 +60,34 @@ Mario::Mario()
     //Set X and Y velocity
     this->setXVelocity(0.0);
     this->setYVelocity(0.0);
+    
+    if (texture == NULL) {
+        FILE *fp = fopen("/Users/dreed/Downloads/delme.tex", "r");
+        texture = new unsigned char[4 * 256 * 256];
+        int count = fread(texture, sizeof(unsigned char), 4 * 256 * 256, fp);
+        fclose(fp);
+        glGenTextures(1, &marioTexture);
+        glBindTexture(GL_TEXTURE_2D, marioTexture);
+        
+        // select modulate to mix texture with color for shading
+        glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
+        
+        // when texture area is small, bilinear filter the closest mipmap
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                        GL_LINEAR_MIPMAP_NEAREST );
+        // when texture area is large, bilinear filter the first mipmap
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        
+        // if wrap is true, the texture wraps over at the edges (repeat)
+        //       ... false, the texture ends at the edges (clamp)
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                        GL_CLAMP );
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                        GL_CLAMP );
+        
+        // build our texture mipmaps
+        gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+    }
 
 }
 //------------------------------------------------------------
