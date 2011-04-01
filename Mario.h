@@ -40,7 +40,6 @@ private:
 	int state_, jumpCount_, starCount_; 
 	bool isInvincible_;
     bool jumpKey_, rightKey_, leftKey_, sprintKey_, fireballKey_;
-	int vector[3];
     
 	//Moves Mario to the left or right and calls check() at beginning
 	void move();
@@ -48,6 +47,9 @@ private:
     bool check();
 	//Returns true if Mario is in the fire state
 	bool fireball();
+    
+    //Handels all jump cases
+    void jump();
 	
     static GLuint textureNum;
 };
