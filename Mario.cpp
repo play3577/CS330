@@ -25,15 +25,15 @@ void Mario::draw()
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, marioTexture);
     glBegin(GL_POLYGON);
-    glTexCoord2d(0, 1);
-    glVertex2d(left(), bottom());
     glTexCoord2d(0, 0);
+    glVertex2d(left(), bottom());
+    glTexCoord2d(0, 1);
     glVertex2d(left(), top());
     
     //glVertex2d(((right()-left())/2)+left(), top());
-    glTexCoord2d(1,0);
+    glTexCoord2d(1,1);
     glVertex2d(right(),top());
-    glTexCoord2d(1, 1);
+    glTexCoord2d(1, 0);
     glVertex2d(right(), bottom());
     glEnd();
     glDisable(GL_TEXTURE_2D);
@@ -63,8 +63,10 @@ Mario::Mario()
     
     if (texture == NULL) {
         FILE *fp = fopen("/Users/dreed/Downloads/wyndy.tex", "r");
-        texture = new unsigned char[3 * 256 * 256];
-        int count = fread(texture, sizeof(unsigned char), 3 * 256 * 256, fp);
+        texture = new unsigned char[4 * 256 * 256];
+        if (fread(texture, sizeof(unsigned char), 4 * 256 * 256, fp) != 4* 256 *256) {
+            fprintf(stderr, "error reading wyndy.tex");
+        }
         fclose(fp);
         glGenTextures(1, &marioTexture);
         glBindTexture(GL_TEXTURE_2D, marioTexture);
@@ -86,7 +88,7 @@ Mario::Mario()
                         GL_CLAMP );
         
         // build our texture mipmaps
-        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, 256, 256, GL_RGB, GL_UNSIGNED_BYTE, texture);
+        gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, texture);
     }
 
 }
