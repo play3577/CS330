@@ -52,6 +52,8 @@ SceneWindow::SceneWindow(int argc, char **argv)
 	
 	glClearColor(0.7, 0.9, 1.0, 1.0);
 	
+    Mario::loadTexture();
+    
 	startGame();
 	
 	glutPostRedisplay();

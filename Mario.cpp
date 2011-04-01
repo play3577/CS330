@@ -14,7 +14,7 @@
 #include "LListIterator.h"
 #include "Level.h"
 
-unsigned char *Mario::texture = NULL;
+GLuint Mario::textureNum = -1;
 
 //------------------------------------------------------------
 void Mario::draw()
@@ -23,7 +23,7 @@ void Mario::draw()
 	int i;
 	
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, marioTexture);
+    glBindTexture(GL_TEXTURE_2D, textureNum);
     glBegin(GL_POLYGON);
     glTexCoord2d(0, 0);
     glVertex2d(left(), bottom());
@@ -39,6 +39,41 @@ void Mario::draw()
     glDisable(GL_TEXTURE_2D);
 	
 }
+
+void Mario::loadTexture()
+{
+    if (textureNum == -1) {
+        FILE *fp = fopen("/Users/dreed/Downloads/wyndy.tex", "r");
+        unsigned char *texture = new unsigned char[4 * 256 * 256];
+        if (fread(texture, sizeof(unsigned char), 4 * 256 * 256, fp) != 4* 256 *256) {
+            fprintf(stderr, "error reading wyndy.tex");
+        }
+        fclose(fp);
+        glGenTextures(1, &textureNum);
+        glBindTexture(GL_TEXTURE_2D, textureNum);
+        
+        // select modulate to mix texture with color for shading
+        glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
+        
+        // when texture area is small, bilinear filter the closest mipmap
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                        GL_LINEAR_MIPMAP_NEAREST );
+        // when texture area is large, bilinear filter the first mipmap
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        
+        // if wrap is true, the texture wraps over at the edges (repeat)
+        //       ... false, the texture ends at the edges (clamp)
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                        GL_CLAMP );
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                        GL_CLAMP );
+        
+        // build our texture mipmaps
+        gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+        delete [] texture;
+    }
+}
+
 //------------------------------------------------------------
 //constructor for Mario Class
 Mario::Mario()
@@ -60,37 +95,6 @@ Mario::Mario()
     //Set X and Y velocity
     this->setXVelocity(0.0);
     this->setYVelocity(0.0);
-    
-    if (texture == NULL) {
-        FILE *fp = fopen("/Users/dreed/Downloads/wyndy.tex", "r");
-        texture = new unsigned char[4 * 256 * 256];
-        if (fread(texture, sizeof(unsigned char), 4 * 256 * 256, fp) != 4* 256 *256) {
-            fprintf(stderr, "error reading wyndy.tex");
-        }
-        fclose(fp);
-        glGenTextures(1, &marioTexture);
-        glBindTexture(GL_TEXTURE_2D, marioTexture);
-        
-        // select modulate to mix texture with color for shading
-        glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
-        
-        // when texture area is small, bilinear filter the closest mipmap
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                        GL_LINEAR_MIPMAP_NEAREST );
-        // when texture area is large, bilinear filter the first mipmap
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        
-        // if wrap is true, the texture wraps over at the edges (repeat)
-        //       ... false, the texture ends at the edges (clamp)
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                        GL_CLAMP );
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                        GL_CLAMP );
-        
-        // build our texture mipmaps
-        gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, texture);
-    }
-
 }
 //------------------------------------------------------------
 //updates Mario's movement info when a button is pushed

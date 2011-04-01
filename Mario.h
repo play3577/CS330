@@ -14,8 +14,6 @@ const int SMALL_STATE = 0, BIG_STATE = 1, FIRE_STATE = 2;
 #include "AllMovable.h"
 
 class Mario: public AllMovable {
-
-    static unsigned char *texture;
     
 public:
 	//Constructor
@@ -34,6 +32,8 @@ public:
     
     //returns the object type of Mario
     virtual int objectType() { return 6; }
+    
+    static void loadTexture();
 
 private:
 	//State can be 0,1,2 depending if he is Big/Little/Fire Mario
@@ -48,8 +48,8 @@ private:
     bool check();
 	//Returns true if Mario is in the fire state
 	bool fireball();
-    
-    GLuint marioTexture;
+	
+    static GLuint textureNum;
 };
 
 #endif
