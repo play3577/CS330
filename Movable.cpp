@@ -34,6 +34,8 @@ bool Movable::canMove()
     Drawable *dLeft = this->checkLeft();
     Drawable *dBottom = this->checkBottom();
 
+    // if keepGoing is true, object can continue to move under current velocities
+    // if keepGoing is false, object needs to turn around
 	bool keepGoing = true;
 
     // if nothing underneath
@@ -50,20 +52,21 @@ bool Movable::canMove()
         }
     }
 
-    // if a block type is underneath
+    // if a type is underneath that shouldn't fall through, set velocity to 0
     else 
     {
         if (dBottom->objectType() == REGULAR || dBottom->objectType() == BREAKABLE || dBottom->objectType() == QUESTION || dBottom->objectType() == PIPE || dBottom->objectType() == OFFQUESTION) 
         {
             this->setYVelocity(0.0);
         }
+        // needs to ignore background and fall
         else if (dBottom->objectType() == BACKGROUND)
         {
             this->setYVelocity(-2.0);
         }
     }
 
-    // if nothing to the right or left
+    // if nothing to the right and if it should turn around at that object
     if (dRight != NULL && dRight->objectType() != BACKGROUND) 
     {
         if (dRight->objectType() == REGULAR || dRight->objectType() == BREAKABLE || dRight->objectType() == QUESTION || dRight->objectType() == PIPE) 
@@ -72,6 +75,7 @@ bool Movable::canMove()
         }
     }
 
+    // if nothing is to the left and if it should turn around at that object
     if (dLeft != NULL && dLeft->objectType() != BACKGROUND) 
     {
         if (dLeft->objectType() == REGULAR || dLeft->objectType() == BREAKABLE || dLeft->objectType() == QUESTION || dLeft->objectType() == PIPE) 
