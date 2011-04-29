@@ -384,6 +384,7 @@ void Mario::check() {
                 nshell->setRight(objb->right());
                 nshell->setLeft(objb->left());
                 nshell->setBottom(objb->bottom());
+                nshell->setXVelocity(0.0);
                 Level::sharedLevel()->addMovable(nshell);
                 //break;
             case GOOMBA:
@@ -392,6 +393,13 @@ void Mario::check() {
                 this->jumpCount_ = 25;
                 this->setYVelocity(2.0);
             case SHELL:
+                nshell = (Shell*) objb;
+                if (nshell->getXVelocity() == 0.0) {
+                    nshell->setXVelocity(1.0);
+                } else {
+                    nshell->setXVelocity(0.0);
+                }
+                break;
             case ENEMYFIREBALL:
                 break;
             case MUSHROOM:
