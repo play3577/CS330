@@ -25,18 +25,22 @@
 using namespace std;
 
 //------------------------------------------------------------
-void Mario::draw()
+void Mario::draw(bool update)
 {
     if (!this->isDead()){
-    //Determine power up
-    int dState= 0;
+        //Determine power up
+        int dState= 0;
+        
+        if (this->state_ == BIG_STATE) {
+            dState = 1;
+        }
+        else if ( this->state_ == FIRE_STATE){
+            dState = 2;
+        }
+        if (update) {
+            
+        
     
-    if (this->state_ == BIG_STATE) {
-        dState = 1;
-    }
-    else if ( this->state_ == FIRE_STATE){
-        dState = 2;
-    }
     
     //Determine sprite possition
     if (this->getYVelocity() != 0.0) {
@@ -53,8 +57,9 @@ void Mario::draw()
     else{
         texturePos = 0;
     }
+    }
 
-    //Bind Texture to Quad         
+    //Set proper blending for alpha        
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glEnable( GL_TEXTURE_2D );
@@ -70,7 +75,7 @@ void Mario::draw()
     //Draw Quad
     glBegin( GL_QUADS );
     glColor4f(0.7f,0.9f,1.0f,1.0f);
-    if (this->getXVelocity() >= 0) {
+    if (this->direction_ == 1) {
         glTexCoord2d(0.0,0.0); glVertex2d(left(),bottom());
         glTexCoord2d(1.0,0.0); glVertex2d(right(),bottom());
         glTexCoord2d(1.0,1.0); glVertex2d(right(),top());
@@ -84,6 +89,7 @@ void Mario::draw()
     }
     glEnd();
     
+    //Disable unwanted gl modes
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 }
@@ -257,7 +263,7 @@ void Mario::updateScene()
         if (starCount_ > 0)
             starCount_ --;
         if (hitCount_ > 0)
-            hitCount_--;   
+            hitCount_--;
     }
     
 }
@@ -306,6 +312,16 @@ void Mario::check() {
                 if (this->getYVelocity() >= 0) {
                     ((Breakable*) objt)->breakBlock(this->getState() != SMALL_STATE);
                     (game)->breakBlock(this->getState() != SMALL_STATE);
+                    
+                    if (this->getState() != SMALL_STATE)
+                    {
+                        this->setTop(this->top() + 16);
+                        objt = this->checkTop();
+                        if (objt)
+                            Level::sharedLevel()->removeDrawable(objt);
+                        
+                        this->setTop(this->top() - 16);
+                    }
                 }
                 break;
             case GOOMBA:
@@ -337,6 +353,7 @@ void Mario::check() {
                     this->isDead_ = true;
                 }
                 break;
+                
             case MUSHROOM:
                 game->addPowerup();
                 Level::sharedLevel()->removeDrawable(objt);
@@ -412,7 +429,7 @@ void Mario::check() {
                 break;
             case STAR:
                 game->addPowerup();
-                starCount_ = 50;
+                starCount_ = 1000;
                 break;
             case FIREFLOWER:
                 game->addPowerup();
@@ -478,6 +495,7 @@ void Mario::check() {
                     this->isDead_ = true;
                 }
                 break;
+                
             case MUSHROOM:
                 game->addPowerup();
                 Level::sharedLevel()->removeDrawable(objl);
@@ -495,7 +513,7 @@ void Mario::check() {
                 if (state_ == SMALL_STATE)
                 {
                     this->setTop(this->top() + 8);
-                }   
+                }
                 this->state_ = FIRE_STATE;
                 Level::sharedLevel()->removeDrawable(objl);
                 break;
@@ -663,10 +681,11 @@ void Mario::sprite()
             }
             fclose(fp);
             
+            //Bind Texture to a GLuint
             glGenTextures(1, &texture_[j][i]);
             glBindTexture(GL_TEXTURE_2D, texture_[j][i]);
             
-            //build MipMap
+            //Set parameters for how the texture is displayed
             glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );        
             glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                             GL_LINEAR_MIPMAP_NEAREST );
@@ -676,6 +695,8 @@ void Mario::sprite()
                             GL_CLAMP );
             glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                             GL_CLAMP );
+            
+            //Build Mipmap
             gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 32, height, GL_RGBA,
                               GL_UNSIGNED_BYTE, texture);
             delete [] texture;
@@ -684,7 +705,7 @@ void Mario::sprite()
     }
     
     iName = homeDir+"3mario0.tex";
-    //Load death texture
+    //Read in the texture file
     FILE *fp = fopen(iName.c_str(), "r");
     unsigned char *texture = new unsigned char[4 * 32 * 32];
     if (fread(texture, sizeof(unsigned char), 4 * 32 * 32, fp)
@@ -693,10 +714,11 @@ void Mario::sprite()
     }
     fclose(fp);
     
+    //Bind Texture to a GLuint
     glGenTextures(1, &deadtexture_);
     glBindTexture(GL_TEXTURE_2D, deadtexture_);
     
-    //build MipMap
+    //Set parameters for how the texture is displayed
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );        
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_NEAREST );
@@ -706,12 +728,14 @@ void Mario::sprite()
                     GL_CLAMP );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                     GL_CLAMP );
+    
+    //Build Mipmap
     gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 32, 32, GL_RGBA,
                       GL_UNSIGNED_BYTE, texture);
     delete [] texture;
 
 }
-
+//------------------------------------------------------------
 void Mario::reset(){
     if (isDead()) {
         state_ = SMALL_STATE;
@@ -729,6 +753,7 @@ void Mario::reset(){
     leftKey_ = false;
     sprintKey_ = false;
     fireballKey_ = false;
+	direction_ = 1;
     
     //Set X and Y velocity
     this->setXVelocity(0.0);

@@ -24,7 +24,7 @@ private:
 public:
 	Background(char kind)
     {
-        //Bush
+        //Determine background element type
         if (kind == 'u') {
             kind_ = 0;
             width_ = 32;
@@ -99,7 +99,7 @@ public:
 	}
     
 	// OpenGL abstract method to draw object
-	virtual void draw();
+	virtual void draw(bool update);
 	// Returns object type Background
 	int objectType() { return BACKGROUND; }
     //return sprite elements
