@@ -5,7 +5,7 @@
  *  Created by Andrew Peddicord on 2/1/11.
  *  Copyright 2011 Capital University. All rights reserved.
  *
- * filed edited by Drew and Nate
+ * filed edited by Eric, Nate and Drew
  */
 
 
@@ -174,9 +174,14 @@ void Mario::updateKeyDown(unsigned char button)
         if (this->state_ == FIRE_STATE) {
             MarioFireball *fb = new MarioFireball;
             fb->setTop(this->top());
-            fb->setLeft(this->right());
             fb->setBottom(this->top() - 8);
-            fb->setRight(this->right() + 8);
+            if (this->direction_ == 0) {
+                fb->setLeft(this->left());
+                fb->setRight(this->left() - 8);
+            } else {
+                fb->setLeft(this->right());
+                fb->setRight(this->right() + 8);
+            }
             if (direction_ == 1) {
                 fb->setXVelocity(1.0);
             }
@@ -296,6 +301,7 @@ void Mario::check() {
                 }
                 break;
             case QUESTION:
+                //Prevent Mario from hiting blocks when falling
                 if (this->getYVelocity() > 0) {
                     this->setXVelocity(0.0);
                     this->jumpCount_ = 0;
@@ -305,6 +311,7 @@ void Mario::check() {
                 }
                 break;
             case BREAKABLE:
+                //Prevent Mario from hiting blocks when falling
                 if (this->getYVelocity() > 0) {
                     this->setXVelocity(0.0);
                     this->jumpCount_ = 0;
@@ -330,6 +337,7 @@ void Mario::check() {
             case TURTLE:
                 if (state_ > SMALL_STATE)
                 {
+                    //Set an invinciblity counter when hit
                     if (hitCount_ == 0){
                         hitCount_ = 200;
                         if (state_ == BIG_STATE)
@@ -403,19 +411,26 @@ void Mario::check() {
                 nshell->setBottom(objb->bottom());
                 nshell->setXVelocity(0.0);
                 Level::sharedLevel()->addMovable(nshell);
-                //break;
             case GOOMBA:
                 game->jumpEnemy(1);
                 Level::sharedLevel()->removeDrawable(objb);
                 this->jumpCount_ = 25;
                 this->setYVelocity(2.0);
+                break;
             case SHELL:
                 nshell = (Shell*) objb;
+                //Have the shell move or stop when jumped on
                 if (nshell->getXVelocity() == 0.0) {
-                    nshell->setXVelocity(1.0);
+                    if (this->direction_ == 0) {
+                        nshell->setXVelocity(-1.0);
+                    } else {
+                        nshell->setXVelocity(1.0);
+                    }
                 } else {
                     nshell->setXVelocity(0.0);
                 }
+                this->jumpCount_ = 25;
+                this->setYVelocity(2.0);
                 break;
             case ENEMYFIREBALL:
                 break;
@@ -472,6 +487,7 @@ void Mario::check() {
             case TURTLE:
                 if (state_ > SMALL_STATE)
                 {
+                    //Set inviniciblity counter
                     if (hitCount_ == 0){
                         hitCount_ = 200;
                         if (state_ == BIG_STATE)
@@ -553,6 +569,7 @@ void Mario::check() {
             case TURTLE:
                 if (state_ > SMALL_STATE)
                 {
+                    //Set inviniciblity conter
                     if (hitCount_ == 0){
                         hitCount_ = 200;
                         if (state_ == BIG_STATE)
@@ -620,6 +637,7 @@ void Mario::check() {
     {
         this->setXVelocity(0.0);
     }
+    //Kill Mario if timer reaches zero or he falls off the level
     if (this->top() <= 0 || game->getTime() <= 0) {
         this->isDead_ = true;
     }
