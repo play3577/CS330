@@ -126,6 +126,9 @@ Mario::Mario()
 //updates Mario's movement info when a button is pushed
 void Mario::updateKeyDown(unsigned char button)
 {
+    // if the key to move left is pushed
+    // set Mario's direction and X velocity
+    // to move left
     if (button == 'a')
     {
         leftKey_ = true;
@@ -140,7 +143,9 @@ void Mario::updateKeyDown(unsigned char button)
             this->setXVelocity(-1.0);
         }
     }
-    
+    // if the key to move right is pushed
+    // set Mario's direction and X velocity
+    // to move right
     if (button == 'd')
     {
         rightKey_ = true;
@@ -155,7 +160,9 @@ void Mario::updateKeyDown(unsigned char button)
             this->setXVelocity(1.0);
         }
     }
-    
+    // if the jump key is pushed and Mario
+    // is not already jumping, set jump count
+    // and Mario's Y velocity
     if (button == 'w')
     {
         jumpKey_ = true;
@@ -167,7 +174,10 @@ void Mario::updateKeyDown(unsigned char button)
             this->setYVelocity(2.0);
         }
     }
-    
+    // if the sprint/fireball key is pushed,
+    // and if Mario is in FIRE_STATE, create
+    // a MarioFireball and set coordinates
+    // and velocity
     if (button == 'j')
     {
         sprintKey_ = true;
@@ -197,6 +207,10 @@ void Mario::updateKeyDown(unsigned char button)
 //upadates Mario's info when a button is let up
 void Mario::updateKeyUp(unsigned char button)
 {
+    // if the left key is let up
+    // stop Mario from moving and
+    // move right if the right key
+    // is being pushed
 	if (button == 'a') {
 		leftKey_ = false;
         if (rightKey_) {
@@ -208,6 +222,8 @@ void Mario::updateKeyUp(unsigned char button)
             this->setXVelocity(0.0);
         }
 	}
+    // if the jump key is let up,
+    // Mario falls
 	if (button == 'w') {
 		jumpKey_ = false;
         if (jumpCount_ > 15) {
@@ -217,7 +233,10 @@ void Mario::updateKeyUp(unsigned char button)
             this->setYVelocity(-2.0);
         }
 	}
-    
+    // if the right key is let up
+    // stop Mario from moving and
+    // move left if the left key
+    // is being pushed
 	if (button == 'd') {
 		rightKey_ = false;
         if (leftKey_) {
@@ -229,6 +248,7 @@ void Mario::updateKeyUp(unsigned char button)
             this->setXVelocity(0.0);
         }
 	}
+    // stop sprint
 	if (button == 'j') {
 		sprintKey_ = false;
 	}
@@ -293,6 +313,7 @@ void Mario::check() {
     //All items that can hit Mario from the top
     if (objt)
         switch (objt->objectType()) {
+            // if the block is Nonbreakable, stop Mario
             case OFFQUESTION:
             case REGULAR:
                 if (this->getYVelocity() > 0) {
@@ -300,8 +321,9 @@ void Mario::check() {
                     this->jumpCount_ = 0;
                 }
                 break;
+            // if the block is question, stop Mario and 
+            // generate reward based on Mario's state
             case QUESTION:
-                //Prevent Mario from hiting blocks when falling
                 if (this->getYVelocity() > 0) {
                     this->setXVelocity(0.0);
                     this->jumpCount_ = 0;
@@ -310,8 +332,11 @@ void Mario::check() {
                     ((Nonbreakable*)objt)->generateReward(this->getState() != SMALL_STATE);
                 }
                 break;
+            // if the block is a breakable block, stop Mario,
+            // check if Mario can break it, and then check if
+            // there is an enemy on top of the block and kill
+            // the enemy
             case BREAKABLE:
-                //Prevent Mario from hiting blocks when falling
                 if (this->getYVelocity() > 0) {
                     this->setXVelocity(0.0);
                     this->jumpCount_ = 0;
@@ -331,13 +356,17 @@ void Mario::check() {
                     }
                 }
                 break;
+            // if an enemy falls on top of Mario, 
+            // SMALL_STATE = Mario dies
+            // if starCount_ > 0, the enemy dies
+            // otherwise decrease state and make
+            // Mario invincible for 200 frames
             case GOOMBA:
             case SHELL:
             case ENEMYFIREBALL:
             case TURTLE:
                 if (state_ > SMALL_STATE)
                 {
-                    //Set an invinciblity counter when hit
                     if (hitCount_ == 0){
                         hitCount_ = 200;
                         if (state_ == BIG_STATE)
@@ -361,7 +390,9 @@ void Mario::check() {
                     this->isDead_ = true;
                 }
                 break;
-                
+            // if a reward falls on top of Mario or he jumps
+            // into a reward, increase state accordingly or
+            // add points
             case MUSHROOM:
                 game->addPowerup();
                 Level::sharedLevel()->removeDrawable(objt);
@@ -370,9 +401,10 @@ void Mario::check() {
                     this->setTop(this->top() + 8);
                 }
                 break;
+            // Make Mario invincible for 1000 frames
             case STAR:
                 game->addPowerup();
-                starCount_ = 50;
+                starCount_ = 1000;
                 break;
             case FIREFLOWER:
                 game->addPowerup();
@@ -394,6 +426,8 @@ void Mario::check() {
     if (objb) {
         Shell *nshell;
         switch (objb->objectType()) {
+            // if Mario lands on anything solid
+            // stop Mario from falling
             case PIPE:
             case OFFQUESTION:
             case BREAKABLE:
@@ -403,37 +437,28 @@ void Mario::check() {
                     this->setYVelocity(0.0);
                 }
                 break;
+            // Mario lands on an enemy
+            // if Turtle, generate shell
             case TURTLE:
                 nshell = new Shell();
                 nshell->setTop(objb->top()-8);
                 nshell->setRight(objb->right());
                 nshell->setLeft(objb->left());
                 nshell->setBottom(objb->bottom());
-                nshell->setXVelocity(0.0);
                 Level::sharedLevel()->addMovable(nshell);
+                //break;
+            // if Goomba, kill enemy and 
+            // reset jumpCount to half for bounce
             case GOOMBA:
                 game->jumpEnemy(1);
                 Level::sharedLevel()->removeDrawable(objb);
                 this->jumpCount_ = 25;
                 this->setYVelocity(2.0);
-                break;
             case SHELL:
-                nshell = (Shell*) objb;
-                //Have the shell move or stop when jumped on
-                if (nshell->getXVelocity() == 0.0) {
-                    if (this->direction_ == 0) {
-                        nshell->setXVelocity(-1.0);
-                    } else {
-                        nshell->setXVelocity(1.0);
-                    }
-                } else {
-                    nshell->setXVelocity(0.0);
-                }
-                this->jumpCount_ = 25;
-                this->setYVelocity(2.0);
-                break;
             case ENEMYFIREBALL:
                 break;
+            // if Mario lands on a reward, increase state accordingly or
+            // add points
             case MUSHROOM:
                 game->addPowerup();
                 Level::sharedLevel()->removeDrawable(objb);
@@ -442,6 +467,7 @@ void Mario::check() {
                     this->setTop(this->top() + 8);
                 }
                 break;
+            // Make Mario invincible for 1000 frames
             case STAR:
                 game->addPowerup();
                 starCount_ = 1000;
@@ -459,6 +485,7 @@ void Mario::check() {
                 game->addCoin();
                 Level::sharedLevel()->removeDrawable(objb);
                 break;
+            // Mario has reached the end of the level
             case FLAG:
                 game->touchFlag(this->bottom());
                 compleateLevel_=true;
@@ -472,6 +499,8 @@ void Mario::check() {
     //All objects that can hit Mario from the left
     if (objl) {
         switch (objl->objectType()) {
+            // if Mario runs into anything solid
+            // stop Mario from moving through object
             case PIPE:
             case BREAKABLE:
             case REGULAR:
@@ -481,13 +510,17 @@ void Mario::check() {
                     this->setXVelocity(0.0);
                 }
                 break;
+            // if Mario runs into an enemy, 
+            // SMALL_STATE = Mario dies
+            // if starCount_ > 0, the enemy dies
+            // otherwise decrease state and make
+            // Mario invincible for 200 frames
             case GOOMBA:
             case SHELL:
             case ENEMYFIREBALL:
             case TURTLE:
                 if (state_ > SMALL_STATE)
                 {
-                    //Set inviniciblity counter
                     if (hitCount_ == 0){
                         hitCount_ = 200;
                         if (state_ == BIG_STATE)
@@ -511,7 +544,8 @@ void Mario::check() {
                     this->isDead_ = true;
                 }
                 break;
-                
+            // Mario runs into a reward, update state accordingly
+            // or add points
             case MUSHROOM:
                 game->addPowerup();
                 Level::sharedLevel()->removeDrawable(objl);
@@ -520,9 +554,10 @@ void Mario::check() {
                     this->setTop(this->top() + 8);
                 }
                 break;
+            // Make Mario invincible for 1000 frames
             case STAR:
                 game->addPowerup();
-                starCount_ = 50;
+                starCount_ = 1000;
                 break;
             case FIREFLOWER:
                 game->addPowerup();
@@ -537,6 +572,7 @@ void Mario::check() {
                 game->addCoin();
                 Level::sharedLevel()->removeDrawable(objl);
                 break;
+            // Mario has reached the end of the level
             case FLAG:
                 game->touchFlag(this->bottom());
                 compleateLevel_=true;
@@ -554,6 +590,8 @@ void Mario::check() {
     //All objects that can hit Mario from the right
     if (objr) {
         switch (objr->objectType()) {
+            // if Mario runs into anything solid
+            // stop Mario from moving through object
             case PIPE:
             case OFFQUESTION:
             case BREAKABLE:
@@ -563,13 +601,17 @@ void Mario::check() {
                     this->setXVelocity(0.0);
                 }
                 break;
+            // if Mario runs into an enemy, 
+            // SMALL_STATE = Mario dies
+            // if starCount_ > 0, the enemy dies
+            // otherwise decrease state and make
+            // Mario invincible for 200 frames
             case GOOMBA:
             case SHELL:
             case ENEMYFIREBALL:
             case TURTLE:
                 if (state_ > SMALL_STATE)
                 {
-                    //Set inviniciblity conter
                     if (hitCount_ == 0){
                         hitCount_ = 200;
                         if (state_ == BIG_STATE)
@@ -593,6 +635,8 @@ void Mario::check() {
                     this->isDead_ = true;
                 }
                 break;
+            // Mario runs into a reward, update state accordingly
+            // or add points
             case MUSHROOM:
                 game->addPowerup();
                 Level::sharedLevel()->removeDrawable(objr);
@@ -601,6 +645,7 @@ void Mario::check() {
                     this->setTop(this->top() + 8);
                 }
                 break;
+            // Make Mario invincible for 1000 frames
             case STAR:
                 game->addPowerup();
                 starCount_ = 50;
@@ -618,6 +663,7 @@ void Mario::check() {
                 game->addCoin();
                 Level::sharedLevel()->removeDrawable(objr);
                 break;
+            // Mario has reached the end of the level
             case FLAG:
                 game->touchFlag(this->bottom());
                 compleateLevel_=true;
@@ -637,7 +683,8 @@ void Mario::check() {
     {
         this->setXVelocity(0.0);
     }
-    //Kill Mario if timer reaches zero or he falls off the level
+    // if Mario falls off a ledge or if time runs out
+    // Mario dies
     if (this->top() <= 0 || game->getTime() <= 0) {
         this->isDead_ = true;
     }

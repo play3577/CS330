@@ -72,7 +72,6 @@ void Plant::updateScene()
         {
             count_ = 720;
         }
-        
     }
     double currentXVelocity, currentYVelocity;
     double updatedLeft, updatedRight, updatedTop, updatedBottom;

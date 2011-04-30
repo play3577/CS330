@@ -172,13 +172,11 @@ void SceneWindow::displayCB()
 		while ((item = li.next())) {
 			item->draw(true);
 		}
-        
         //Loops through all active moveable objects
 		li.init(movable);
 		while ((item = li.next())) {
 			item->draw(game->spriteUpdate());
 		}
-    
         //Loops through all active block objects
 		li.init(blocks);
 		while ((item = li.next())) {

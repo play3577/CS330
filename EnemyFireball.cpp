@@ -44,7 +44,6 @@ void EnemyFireball::draw(bool update)
             texturePos = 0;
         }
     }
-    
 	
     //Set proper blending for alpha
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
