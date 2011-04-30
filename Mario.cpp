@@ -8,6 +8,7 @@
  * filed edited by Drew and Nate
  */
 
+
 #include "Mario.h"
 #include "LListIterator.h"
 #include "Level.h"
@@ -53,7 +54,7 @@ void Mario::draw()
         texturePos = 0;
     }
 
-    //Bind Texture to Quad         
+    //Set proper blending for alpha        
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glEnable( GL_TEXTURE_2D );
@@ -83,6 +84,7 @@ void Mario::draw()
     }
     glEnd();
     
+    //Disable unwanted gl modes
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 }
@@ -296,15 +298,19 @@ void Mario::check() {
                     this->setXVelocity(0.0);
                     this->jumpCount_ = 0;
                 }
-                ((Nonbreakable*)objt)->generateReward(this->getState() != SMALL_STATE);
+                if (this->getYVelocity() >= 0) {
+                    ((Nonbreakable*)objt)->generateReward(this->getState() != SMALL_STATE);
+                }
                 break;
             case BREAKABLE:
                 if (this->getYVelocity() > 0) {
                     this->setXVelocity(0.0);
                     this->jumpCount_ = 0;
                 }
-                ((Breakable*) objt)->breakBlock(this->getState() != SMALL_STATE);
-                ( game)->breakBlock(this->getState() != SMALL_STATE);
+                if (this->getYVelocity() >= 0) {
+                    ((Breakable*) objt)->breakBlock(this->getState() != SMALL_STATE);
+                    (game)->breakBlock(this->getState() != SMALL_STATE);
+                }
                 break;
             case GOOMBA:
             case SHELL:
@@ -583,8 +589,8 @@ void Mario::check() {
     {
         this->setXVelocity(0.0);
     }
-    if (this->top() <= 0) {
-        isDead_ = true;
+    if (this->top() <= 0 || game->getTime() <= 0) {
+        this->isDead_ = true;
     }
 }
 //------------------------------------------------------------
@@ -644,10 +650,11 @@ void Mario::sprite()
             }
             fclose(fp);
             
+            //Bind Texture to a GLuint
             glGenTextures(1, &texture_[j][i]);
             glBindTexture(GL_TEXTURE_2D, texture_[j][i]);
             
-            //build MipMap
+            //Set parameters for how the texture is displayed
             glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );        
             glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                             GL_LINEAR_MIPMAP_NEAREST );
@@ -657,6 +664,8 @@ void Mario::sprite()
                             GL_CLAMP );
             glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                             GL_CLAMP );
+            
+            //Build Mipmap
             gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 32, height, GL_RGBA,
                               GL_UNSIGNED_BYTE, texture);
             delete [] texture;
@@ -665,7 +674,7 @@ void Mario::sprite()
     }
     
     iName = homeDir+"3mario0.tex";
-    //Load death texture
+    //Read in the texture file
     FILE *fp = fopen(iName.c_str(), "r");
     unsigned char *texture = new unsigned char[4 * 32 * 32];
     if (fread(texture, sizeof(unsigned char), 4 * 32 * 32, fp)
@@ -674,10 +683,11 @@ void Mario::sprite()
     }
     fclose(fp);
     
+    //Bind Texture to a GLuint
     glGenTextures(1, &deadtexture_);
     glBindTexture(GL_TEXTURE_2D, deadtexture_);
     
-    //build MipMap
+    //Set parameters for how the texture is displayed
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );        
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_NEAREST );
@@ -687,6 +697,8 @@ void Mario::sprite()
                     GL_CLAMP );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                     GL_CLAMP );
+    
+    //Build Mipmap
     gluBuild2DMipmaps(GL_TEXTURE_2D, 4, 32, 32, GL_RGBA,
                       GL_UNSIGNED_BYTE, texture);
     delete [] texture;
@@ -699,6 +711,8 @@ void Mario::reset(){
     }
     jumpCount_ = 0;
     starCount_ = 0;
+    hitCount_ = 0;
+    direction_ = 1;
     
     isDead_ = false;
     isInvincible_ = false;
