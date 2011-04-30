@@ -15,10 +15,15 @@
 #include "LListIterator.h"
 using namespace std;
 
+#include "SceneWindow.h"
+SceneWindow *sw;
+
 //------------------------------------------------------------
 
-int main()
+int main(int argc, char **argv)
 {
+    sw = new SceneWindow(argc, (char**) argv);
+
 	// Creates four new coin pointers and three lists
     Coin *coin = new Coin();
 	Coin *coin2 = new Coin();
