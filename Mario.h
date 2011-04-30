@@ -5,6 +5,8 @@
  *  Created by Andrew Peddicord on 2/1/11.
  *  Copyright 2011 Capital University. All rights reserved.
  *
+ *  Edited by Eric, Nate and Drew
+ *
  */
 //Object constant will be 6
 #ifndef __MARIO_H__

@@ -86,6 +86,7 @@ void LList::removeDrawable(Drawable *obj) {
 	int i;
 	ListNode *prenode;
 	ListNode *node = this->head_;
+    //Find the object
 	for (i = 0; i<(this->size_); i++) {
 		if (node->item_ == obj) {
 			break;
@@ -93,9 +94,11 @@ void LList::removeDrawable(Drawable *obj) {
 		prenode = node;
 		node = node->next_;
 	}
+    //If it is the first
 	if (i == 0) {
 		removeFirst();
 		return;
+    //If it is the last
 	} else if (i == ((this->size_) - 1)) {
 		delete this->tail_;
 		this->tail_ = prenode;
@@ -127,6 +130,7 @@ void LList::insertInSortedOrder(Drawable *item) {
     ListNode *newNode = new ListNode();
     newNode->item_ = item;
     int x, i;
+    //Find a node with the left greator than the inserted item
     for (i = 0; i < (this->size_); ++i) {
         x = node->item_->left();
         if (item->left() <= x) {
@@ -135,6 +139,7 @@ void LList::insertInSortedOrder(Drawable *item) {
         temp = node;
         node = node->next_;
     }
+    //If item is at the head
     if (i == 0){
         this->head_ = newNode;
         if (this->size() == 0) {
@@ -144,6 +149,7 @@ void LList::insertInSortedOrder(Drawable *item) {
         }
         this->size_++;
     }
+    //If it did not find a node
     else if (!node) {
         this->append(item);
     } else {
