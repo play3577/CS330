@@ -12,6 +12,7 @@
 //---------------------------------------------------------
 
 #include "Shell.h"
+#include "Level.h"
 #include <string>
 #include <sstream>
 
@@ -44,7 +45,90 @@ Shell::~Shell()
 
 //---------------------------------------------------------
 
-void Shell::draw()
+bool Shell::canMove()
+{
+    // call checkRight and checkLeft methods
+    Drawable *dRight = this->checkRight();
+    Drawable *dLeft = this->checkLeft();
+    Drawable *dBottom = this->checkBottom();
+	Drawable *dTop = this->checkTop();
+    
+    // if keepGoing is true, object can continue to move under current velocities
+    // if keepGoing is false, object needs to turn around
+	bool keepGoing = true;
+    
+    // if and object is detected to the right, left, bottom, or top
+    // and shell should kill it, remove from list
+    if (dRight != NULL)
+	{
+		if (dRight->objectType() == GOOMBA || dRight->objectType() == TURTLE || dRight->objectType() == PLANT)
+		{
+			Level::sharedLevel()->removeDrawable(dRight);
+		}
+    }
+    if (dLeft != NULL) {
+        if (dLeft->objectType() == GOOMBA || dLeft->objectType() == TURTLE || dLeft->objectType() == PLANT)
+		{
+			Level::sharedLevel()->removeDrawable(dLeft);
+		}
+    }
+    if (dBottom != NULL) {
+        if (dBottom->objectType() == GOOMBA || dBottom->objectType() == TURTLE || dBottom->objectType() == PLANT)
+		{
+			Level::sharedLevel()->removeDrawable(dBottom);
+		}
+    }
+	if (dTop != NULL) {
+        if (dTop->objectType() == GOOMBA || dTop->objectType() == TURTLE || dTop->objectType() == PLANT)
+		{
+			Level::sharedLevel()->removeDrawable(dTop);
+		}
+    }	
+    
+    // if nothing underneath and make sure it doesn't detect itself, set to fall
+    if ((dBottom == NULL || dBottom == this) || dBottom->objectType() == BACKGROUND || dBottom->objectType() == COIN)
+    {
+        this->setYVelocity(-2.0);
+    }
+    
+    // // if a type is underneath that shouldn't fall through, set velocity to 0
+    else 
+    {
+        if (dBottom->objectType() == REGULAR || dBottom->objectType() == BREAKABLE || dBottom->objectType() == QUESTION || dBottom->objectType() == PIPE || dBottom->objectType() == OFFQUESTION || dBottom->objectType() == FLAG) 
+        {
+            this->setYVelocity(0.0);
+        }
+        
+        // needs to ignore background and fall
+        else if (dBottom->objectType() == BACKGROUND)
+        {
+            this->setYVelocity(-2.0);
+        }
+    }
+    
+    // if something is detected to the right or left, object should turn around
+    // should ignore the background objects
+    if (dRight != NULL && dRight->objectType() != BACKGROUND) 
+    {
+        if (dRight->objectType() == REGULAR || dRight->objectType() == BREAKABLE || dRight->objectType() == QUESTION || dRight->objectType() == PIPE || dRight->objectType() == FLAG) 
+        {
+            keepGoing = false;
+        }
+    }
+    if (dLeft != NULL && dLeft->objectType() != BACKGROUND) 
+    {
+        if (dLeft->objectType() == REGULAR || dLeft->objectType() == BREAKABLE || dLeft->objectType() == QUESTION || dLeft->objectType() == PIPE || dLeft->objectType() == FLAG) 
+        {
+            keepGoing = false;
+        }
+    }
+    
+	return keepGoing;
+}
+
+//---------------------------------------------------------
+
+void Shell::draw(bool update)
 {
     //Set proper blending for alpha
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);

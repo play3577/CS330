@@ -22,7 +22,7 @@ public:
 	//Constructor
 	Mario();
   
-	virtual void draw();
+	virtual void draw(bool update);
   	//Gets called when key is pressed
 	void updateKeyDown(unsigned char button);
 	//Gets called when key is let up
@@ -73,3 +73,4 @@ inline bool Mario::isDead() {return isDead_;}
 inline bool Mario::levelDone() {return compleateLevel_;}
 
 #endif
+

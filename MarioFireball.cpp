@@ -10,6 +10,7 @@
 //---------------------------------------------------------
 
 #include "MarioFireball.h"
+#include "Level.h"
 #include <string>
 #include <sstream>
 
@@ -35,15 +36,98 @@ MarioFireball::~MarioFireball()
 
 //---------------------------------------------------------
 
-void MarioFireball::draw()
+bool MarioFireball::canMove()
 {
+    // call checkRight and checkLeft methods
+    Drawable *dRight = this->checkRight();
+    Drawable *dLeft = this->checkLeft();
+	Drawable *dTop = this->checkTop();
+    Drawable *dBottom = this->checkBottom();
     
-    if (texturePos < 3) {
-        texturePos++;
+    // if keepGoing is true, object can continue to move under current velocities
+    // if keepGoing is false, object needs to turn around
+	bool keepGoing = true;
+    
+    // if something is detected to the right or the left of the object
+    // determine if it should be removed, or kill the object and be removed
+	if (dRight != NULL)
+	{
+        if (dRight->objectType() == BREAKABLE || dRight->objectType() == QUESTION || dRight->objectType() == PIPE || dRight->objectType() == OFFQUESTION || dRight->objectType() == REGULAR || dRight->objectType() == FLAG || dRight->objectType() == SHELL)
+        {
+            Level::sharedLevel()->removeDrawable(this);
+        }
+        else if (dRight->objectType() == GOOMBA || dRight->objectType() == TURTLE || dRight->objectType() == PLANT)
+        {
+            Level::sharedLevel()->removeDrawable(dRight);
+            Level::sharedLevel()->removeDrawable(this);
+        }
     }
-    else{
-        texturePos = 0;
+    if (dLeft != NULL)
+	{
+        if (dLeft->objectType() == BREAKABLE || dLeft->objectType() == QUESTION || dLeft->objectType() == PIPE || dLeft->objectType() == OFFQUESTION || dLeft->objectType() == REGULAR || dLeft->objectType() == FLAG || dLeft->objectType() == SHELL)
+        {
+            Level::sharedLevel()->removeDrawable(this);
+        }
+        else if (dLeft->objectType() == GOOMBA || dLeft->objectType() == TURTLE || dLeft->objectType() == PLANT)
+        {
+            Level::sharedLevel()->removeDrawable(dLeft);
+            Level::sharedLevel()->removeDrawable(this);
+        }
     }
+    
+    // if an enemy falls on the fireball, kill the enemy and the fireball
+    if (dTop != NULL) {
+        if (dTop->objectType() == GOOMBA || dTop->objectType() == TURTLE || dTop->objectType() == PLANT)
+		{
+			Level::sharedLevel()->removeDrawable(dTop);
+			Level::sharedLevel()->removeDrawable(this);
+		}
+    }
+    
+    // if something is detected below the fireball
+    // if it is an enemy, kill it and the fireball
+    // if it should stop falling, set y velocity to 0
+    // if it hits a shell, shell should survive and fireball should disappear
+    // if two fireballs are directly next to one another, should both fall
+    if (dBottom != NULL) {
+        if (dBottom->objectType() == GOOMBA || dBottom->objectType() == TURTLE || dBottom->objectType() == PLANT)
+		{
+			Level::sharedLevel()->removeDrawable(dBottom);
+			Level::sharedLevel()->removeDrawable(this);
+		}
+        else if (dBottom->objectType() == BREAKABLE || dBottom->objectType() == QUESTION || dBottom->objectType() == PIPE || dBottom->objectType() == OFFQUESTION || dBottom->objectType() == REGULAR || dBottom->objectType() == FLAG )
+        {
+            this->setYVelocity(0.0);
+        }
+        else if (dBottom->objectType() == SHELL) {
+            Level::sharedLevel()->removeDrawable(this);
+        }
+        else if (dBottom->objectType() == MARIOFIREBALL){
+            this->setYVelocity(-1.0);
+        }
+
+    }
+    // nothing is below the fireball, it should also fall
+    else {
+        this->setYVelocity(-1.0);
+    }
+
+    return keepGoing;
+}
+
+//---------------------------------------------------------
+
+void MarioFireball::draw(bool update)
+{
+    if (update) {
+        if (texturePos < 3) {
+            texturePos++;
+        }
+        else{
+            texturePos = 0;
+        }
+    }
+    
 	
     //Set proper blending for alpha
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);

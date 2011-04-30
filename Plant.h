@@ -23,9 +23,11 @@ private:
     GLuint texture_[2];
     int texturePos;
     void sprite();
+    
+    int count_;
 public:
 	// openGL draw method
-    virtual void draw();
+    virtual void draw(bool update);
 	
     // constructor
     Plant();
@@ -33,7 +35,9 @@ public:
     ~Plant();
     
     // methods
-
+    virtual bool canMove();
+    virtual void updateScene();
+    
     // object type
     int objectType() { return PLANT; }
     // method to shoot fireball from plant

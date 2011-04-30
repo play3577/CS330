@@ -7,6 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03197D6C136B034700C0E201 /* SceneWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A373B1302C10100788A82 /* SceneWindow.cpp */; };
+		03197D74136B038300C0E201 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A372B1302C10100788A82 /* Game.cpp */; };
+		03197D75136B038300C0E201 /* Mario.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7DC8B25135DF9F4003E3DBD /* Mario.cpp */; };
+		03197D78136B038C00C0E201 /* AllMovable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37331302C10100788A82 /* AllMovable.cpp */; };
+		03197D7B136B03A500C0E201 /* Breakable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37211302C10100788A82 /* Breakable.cpp */; };
+		03197D7C136B03A500C0E201 /* Nonbreakable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37371302C10100788A82 /* Nonbreakable.cpp */; };
+		03197D7D136B03A500C0E201 /* FireFlower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37271302C10100788A82 /* FireFlower.cpp */; };
+		03197D7E136B03A500C0E201 /* Background.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7A503E5135CC79200F72E5C /* Background.cpp */; };
+		03197D7F136B03A500C0E201 /* Pipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03739E77135759580001C080 /* Pipe.cpp */; };
+		03197D82136B03D100C0E201 /* Movable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A378C1302C3C300788A82 /* Movable.cpp */; };
+		03197D83136B03D100C0E201 /* Goomba.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A372D1302C10100788A82 /* Goomba.cpp */; };
+		03197D84136B03D100C0E201 /* Mushroom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37351302C10100788A82 /* Mushroom.cpp */; };
+		03197D85136B03D100C0E201 /* Plant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37391302C10100788A82 /* Plant.cpp */; };
+		03197D86136B03D100C0E201 /* Shell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A373D1302C10100788A82 /* Shell.cpp */; };
+		03197D87136B03D100C0E201 /* Star.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A373F1302C10100788A82 /* Star.cpp */; };
+		03197D88136B03D100C0E201 /* Turtle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37411302C10100788A82 /* Turtle.cpp */; };
+		03197D89136B03D100C0E201 /* EnemyFireball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03462EDB130AFC4A004BBAE6 /* EnemyFireball.cpp */; };
+		03197D8A136B03D100C0E201 /* MarioFireball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03462EDD130AFC4A004BBAE6 /* MarioFireball.cpp */; };
+		03197D8D136B03E200C0E201 /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A372F1302C10100788A82 /* Level.cpp */; };
+		03197D90136B03EF00C0E201 /* Flag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A37291302C10100788A82 /* Flag.cpp */; };
 		03462EDF130AFC4A004BBAE6 /* EnemyFireball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03462EDB130AFC4A004BBAE6 /* EnemyFireball.cpp */; };
 		03462EE0130AFC4A004BBAE6 /* MarioFireball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03462EDD130AFC4A004BBAE6 /* MarioFireball.cpp */; };
 		03624CA31369082F00BA62C2 /* SceneWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 037A373B1302C10100788A82 /* SceneWindow.cpp */; };
@@ -389,9 +409,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03197D8D136B03E200C0E201 /* Level.cpp in Sources */,
+				03197D78136B038C00C0E201 /* AllMovable.cpp in Sources */,
+				03197D82136B03D100C0E201 /* Movable.cpp in Sources */,
+				03197D83136B03D100C0E201 /* Goomba.cpp in Sources */,
+				03197D84136B03D100C0E201 /* Mushroom.cpp in Sources */,
+				03197D85136B03D100C0E201 /* Plant.cpp in Sources */,
+				03197D90136B03EF00C0E201 /* Flag.cpp in Sources */,
+				03197D86136B03D100C0E201 /* Shell.cpp in Sources */,
+				03197D87136B03D100C0E201 /* Star.cpp in Sources */,
+				03197D88136B03D100C0E201 /* Turtle.cpp in Sources */,
+				03197D89136B03D100C0E201 /* EnemyFireball.cpp in Sources */,
+				03197D8A136B03D100C0E201 /* MarioFireball.cpp in Sources */,
+				03197D74136B038300C0E201 /* Game.cpp in Sources */,
+				03197D75136B038300C0E201 /* Mario.cpp in Sources */,
+				03197D6C136B034700C0E201 /* SceneWindow.cpp in Sources */,
 				037608EF1342470000A50E9A /* test_LList.cpp in Sources */,
 				037608F01342471000A50E9A /* LList.cpp in Sources */,
+				03197D7B136B03A500C0E201 /* Breakable.cpp in Sources */,
+				03197D7C136B03A500C0E201 /* Nonbreakable.cpp in Sources */,
+				03197D7D136B03A500C0E201 /* FireFlower.cpp in Sources */,
 				039EFB0B1344E6B50074E32E /* Coin.cpp in Sources */,
+				03197D7E136B03A500C0E201 /* Background.cpp in Sources */,
+				03197D7F136B03A500C0E201 /* Pipe.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

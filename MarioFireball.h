@@ -24,7 +24,7 @@ private:
     
 public:
 	// openGL draw method
-    virtual void draw();
+    virtual void draw(bool update);
 	
     // constructor
     MarioFireball();
@@ -32,7 +32,7 @@ public:
     ~MarioFireball();
     
     // methods
-    
+    virtual bool canMove();
     // object type
     int objectType() { return MARIOFIREBALL; }
     

@@ -33,14 +33,16 @@ EnemyFireball::~EnemyFireball()
 
 //---------------------------------------------------------
 
-void EnemyFireball::draw()
+void EnemyFireball::draw(bool update)
 {
-    //Determine Texture Position
-    if (texturePos < 3) {
-        texturePos++;
-    }
-    else{
-        texturePos = 0;
+    if (update) {
+        //Determine Texture Position
+        if (texturePos < 3) {
+            texturePos++;
+        }
+        else{
+            texturePos = 0;
+        }
     }
 	
     //Set proper blending for alpha
